@@ -32,9 +32,18 @@
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
+  <PropertyGroup>
+    <SignAssembly>true</SignAssembly>
+  </PropertyGroup>
+  <PropertyGroup>
+    <AssemblyOriginatorKeyFile>..\EntityFramework.Injection.snk</AssemblyOriginatorKeyFile>
+  </PropertyGroup>
   <ItemGroup>
     <Reference Include="EntityFramework">
       <HintPath>..\packages\EntityFramework.5.0.0\lib\net40\EntityFramework.dll</HintPath>
+    </Reference>
+    <Reference Include="Method.Inject">
+      <HintPath>..\packages\Method.Inject.1.0.26\lib\net40\Method.Inject.dll</HintPath>
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.ComponentModel.DataAnnotations" />
@@ -48,11 +57,14 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="..\EntityFramework.Inject\Emit\*.cs" />
-	<Compile Include="..\EntityFramework.Inject\Helpers\*.cs" />
-	<Compile Include="..\EntityFramework.Inject\Properties\*.cs" />
-	<Compile Include="..\EntityFramework.Inject\*.cs" />
+    <Compile Include="..\EntityFramework.Inject\Helpers\*.cs" />
+    <Compile Include="..\EntityFramework.Inject\Properties\*.cs" />
+    <Compile Include="..\EntityFramework.Inject\*.cs" />
   </ItemGroup>
   <ItemGroup>
+    <None Include="..\EntityFramework.Injection.snk">
+      <Link>EntityFramework.Injection.snk</Link>
+    </None>
     <None Include="App.config" />
     <None Include="packages.config" />
   </ItemGroup>
