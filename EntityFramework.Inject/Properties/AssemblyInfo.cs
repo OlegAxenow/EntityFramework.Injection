@@ -10,7 +10,7 @@ using System.Runtime.InteropServices;
 [assembly: AssemblyConfiguration("")]
 [assembly: AssemblyCompany("")]
 [assembly: AssemblyProduct("EntityFramework.Inject")]
-[assembly: AssemblyCopyright("Copyright © OlegAxenow 2013")]
+[assembly: AssemblyCopyright("Copyright © Oleg Aksenov 2013")]
 [assembly: AssemblyTrademark("")]
 [assembly: AssemblyCulture("")]
 
