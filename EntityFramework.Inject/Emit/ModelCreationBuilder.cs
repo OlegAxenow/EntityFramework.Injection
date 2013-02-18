@@ -1,8 +1,6 @@
 ﻿using System;
 using System.Data.Entity;
-using System.Diagnostics;
 using System.Diagnostics.CodeAnalysis;
-using System.Reflection;
 using System.Reflection.Emit;
 using Method.Inject;
 
@@ -30,20 +28,16 @@ namespace EntityFramework.Inject.Emit
 		{
 			var parameterTypes = new[] { typeof(DbModelBuilder) };
 
-			var method = typeBuilder.DefineMethod(MethodName,
-				MethodAttributes.Family | MethodAttributes.HideBySig | MethodAttributes.Virtual, null, parameterTypes);
-
-			Debug.Assert(typeBuilder.BaseType != null, "_typeBuilder.BaseType != null");
-			var baseMethod = typeBuilder.BaseType.GetMethod(MethodName, BindingFlags.Instance | BindingFlags.NonPublic, null, parameterTypes, null);
+			var methods = new Methods(typeBuilder, MethodName, parameterTypes);
 			var injectionMethod = injectionType.GetMethod(MethodName, parameterTypes);
 
-			var il = method.GetILGenerator();
+			var il = methods.GetILGenerator(injectionType);
 
 			EmitHelper.DeclareLocalsForInjection(injectionType, il);
 
 			il.Emit(OpCodes.Ldarg_0);
 			il.Emit(OpCodes.Ldarg_1);
-			il.Emit(OpCodes.Call, baseMethod);
+			il.Emit(OpCodes.Call, methods.BaseMethod);
 
 			il.EmitGetInjections(injectionSetField, injectionType);
 

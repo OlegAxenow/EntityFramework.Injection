@@ -1,8 +1,6 @@
 ﻿using System;
 using System.Data.Entity;
-using System.Diagnostics;
 using System.Diagnostics.CodeAnalysis;
-using System.Reflection;
 using System.Reflection.Emit;
 using Method.Inject;
 
@@ -33,17 +31,13 @@ namespace EntityFramework.Inject.Emit
 		[SuppressMessage("StyleCop.CSharp.DocumentationRules", "SA1650:ElementDocumentationMustBeSpelledCorrectly", Justification = "Reviewed. Suppression is OK here.")]
 		public void Build(TypeBuilder typeBuilder, FieldBuilder injectionSetField, Type injectionType)
 		{
-			var method = typeBuilder.DefineMethod(MethodName,
-				MethodAttributes.Public | MethodAttributes.HideBySig | MethodAttributes.Virtual, typeof(int), new Type[0]);
-
-			Debug.Assert(typeBuilder.BaseType != null, "typeBuilder.BaseType != null");
-			var baseMethod = typeBuilder.BaseType.GetMethod(MethodName, BindingFlags.Instance | BindingFlags.Public, null, new Type[0], null);
+			var methods = new Methods(typeBuilder, MethodName, new Type[0], typeof(int));
 
 			var parameterTypes = new[] { typeof(DbContext) };
 			var beforeMethod = injectionType.GetMethod("OnBeforeSaveChanges", parameterTypes);
 			var afterMethod = injectionType.GetMethod("OnAfterSaveChanges", parameterTypes);
 
-			var il = method.GetILGenerator();
+			var il = methods.GetILGenerator(injectionType);
 			
 			EmitHelper.DeclareLocalsForInjection(injectionType, il);
 			
@@ -55,7 +49,7 @@ namespace EntityFramework.Inject.Emit
 			il.EmitInjectionLoop(beforeMethod, x => x.Emit(OpCodes.Ldarg_0));
 
 			il.Emit(OpCodes.Ldarg_0);
-			il.Emit(OpCodes.Call, baseMethod);
+			il.Emit(OpCodes.Call, methods.BaseMethod);
 			il.Emit(OpCodes.Stloc_3);
 
 			il.EmitInjectionLoop(afterMethod, x => x.Emit(OpCodes.Ldarg_0));
