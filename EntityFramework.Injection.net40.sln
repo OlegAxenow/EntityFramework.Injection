@@ -1,11 +1,13 @@
 ﻿
-Microsoft Visual Studio Solution File, Format Version 11.00
-# Visual Studio 2010
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio 2012
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "EntityFramework.Inject.net40", "EntityFramework.Inject.net40\EntityFramework.Inject.net40.csproj", "{EA824FC2-4471-49DF-964E-614E74114BA1}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SampleLibrary.net40", "SampleLibrary.net40\SampleLibrary.net40.csproj", "{AE6000F5-2EF4-41E7-BF88-8AE3AC550D08}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "EntityFramework.Inject.Spec.net40", "EntityFramework.Inject.Spec.net40\EntityFramework.Inject.Spec.net40.csproj", "{6E776470-83AE-4E30-8E47-FD612E3416B7}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = ".nuget", ".nuget", "{FFB89120-95C4-4847-858B-452CC21505E8}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
