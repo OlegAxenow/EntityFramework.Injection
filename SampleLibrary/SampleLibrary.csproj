@@ -48,11 +48,21 @@
   <ItemGroup>
     <Compile Include="Entities\ActionType.cs" />
     <Compile Include="Entities\BasicDbContext.cs" />
+    <Compile Include="Entities\Category.cs" />
+    <Compile Include="Entities\LocalizedDbContext.cs" />
+    <Compile Include="Entities\ProtectedCategory.cs" />
+    <Compile Include="Entities\ProtectedDbContext.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="App.config" />
     <None Include="packages.config" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\EntityFramework.Inject\EntityFramework.Inject.csproj">
+      <Project>{fd4282be-503b-4417-82ad-377342a67e97}</Project>
+      <Name>EntityFramework.Inject</Name>
+    </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <Import Project="$(SolutionDir)\.nuget\nuget.targets" />

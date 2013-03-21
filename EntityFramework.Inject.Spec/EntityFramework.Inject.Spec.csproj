@@ -48,9 +48,20 @@
     <Reference Include="Microsoft.CSharp" />
     <Reference Include="System.Data" />
     <Reference Include="System.Data.Entity" />
+    <Reference Include="System.Transactions" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="DataFixtureSetUp.cs" />
     <Compile Include="DbContextInjectionSpec.cs" />
+    <Compile Include="Entities\TestConcurrencyDbContext.cs" />
+    <Compile Include="Entities\TestDbContext.cs" />
+    <Compile Include="Entities\TestDbContext1.cs" />
+    <Compile Include="Entities\TestDbContext2.cs" />
+    <Compile Include="Entities\TestDbContext3.cs" />
+    <Compile Include="Helpers\TestDatabaseInitializer.cs" />
+    <Compile Include="Helpers\MultiThreadTestHelper.cs" />
+    <Compile Include="Localization\DataLocalizationInjectionSpec.cs" />
+    <Compile Include="Localization\DbContextFactorySpec.cs" />
     <Compile Include="Samples\BasicDbContext_generated.cs" />
     <Compile Include="Migrations\Configuration.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
@@ -77,9 +88,7 @@
       <Name>SampleLibrary</Name>
     </ProjectReference>
   </ItemGroup>
-  <ItemGroup>
-    <Folder Include="Data\" />
-  </ItemGroup>
+  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <Import Project="$(SolutionDir)\.nuget\nuget.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

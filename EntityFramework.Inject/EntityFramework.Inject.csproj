@@ -49,14 +49,19 @@
     <Compile Include="DbContextFactory.cs" />
     <Compile Include="Emit\EntityValidationBuilder.cs" />
     <Compile Include="Emit\InjectedDbContextBuilder.cs" />
+    <Compile Include="Emit\LocalizationModelCreationBuilder.cs" />
     <Compile Include="Emit\ModelCreationBuilder.cs" />
     <Compile Include="Emit\SaveChangesBuilder.cs" />
+    <Compile Include="IDataLocalizationInjection.cs" />
     <Compile Include="IEntityValidationInjection.cs" />
+    <Compile Include="IModelCreationAggregateInjection.cs" />
     <Compile Include="IModelCreationInjection.cs" />
+    <Compile Include="Localization\ComputedLocalizedStrings.cs" />
     <Compile Include="Localization\DataLocalizationInjection.cs" />
     <Compile Include="ISaveChangesInjection.cs" />
     <Compile Include="Localization\ILocalizedPropertyNamingConvention.cs" />
     <Compile Include="Localization\LocalizedPropertyNamingConvention.cs" />
+    <Compile Include="Localization\LocalizedStrings.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>

@@ -12,10 +12,12 @@ namespace EntityFramework.Inject.Spec
 		}
 
 		public List<DbModelBuilder> ModelBuilders { get; private set; }
+		public List<DbContext> Contexts { get; private set; }
 
-		public void OnModelCreating(DbModelBuilder modelBuilder)
+		public void OnModelCreating(DbModelBuilder modelBuilder, DbContext context)
 		{
 			ModelBuilders.Add(modelBuilder);
+			Contexts.Add(context);
 		}
 	}
 }

@@ -5,6 +5,6 @@ namespace EntityFramework.Inject
 {
 	public interface IModelCreationInjection : IMethodInjection
 	{
-		void OnModelCreating(DbModelBuilder modelBuilder);
+		void OnModelCreating(DbModelBuilder modelBuilder, DbContext context);
 	}
 }

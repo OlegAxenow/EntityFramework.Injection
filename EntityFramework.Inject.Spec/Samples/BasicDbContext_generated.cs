@@ -24,10 +24,26 @@ namespace EntityFramework.Inject.Spec.Samples
 		{
 			base.OnModelCreating(modelBuilder);
 
-			var injections = _injectionSet.GetInjections<IModelCreationInjection>();
+			var injections = _injectionSet.GetInjections<IDataLocalizationInjection>();
 
 			for (int i = 0; i < injections.Length; i++)
-				injections[i].OnModelCreating(modelBuilder);
+			{
+				injections[i].OnModelCreating(modelBuilder, this);
+
+				injections[i].ConfigureProperty<Category>(modelBuilder, x => x.CategoryName.Value);
+				injections[i].ConfigureProperty<Category>(modelBuilder, x => x.CategoryName.Value1);
+				injections[i].ConfigureProperty<Category>(modelBuilder, x => x.CategoryName.Value2);
+				injections[i].ConfigureProperty<Category>(modelBuilder, x => x.CategoryName.Value3);
+				injections[i].ConfigureProperty<Category>(modelBuilder, x => x.CategoryName.Value4);
+				injections[i].ConfigureProperty<Category>(modelBuilder, x => x.CategoryName.Value5);
+
+				injections[i].ConfigureProperty<Category>(modelBuilder, x => x.CategoryComputed.Value);
+				injections[i].ConfigureProperty<Category>(modelBuilder, x => x.CategoryComputed.Value1);
+				injections[i].ConfigureProperty<Category>(modelBuilder, x => x.CategoryComputed.Value2);
+				injections[i].ConfigureProperty<Category>(modelBuilder, x => x.CategoryComputed.Value3);
+				injections[i].ConfigureProperty<Category>(modelBuilder, x => x.CategoryComputed.Value4);
+				injections[i].ConfigureProperty<Category>(modelBuilder, x => x.CategoryComputed.Value5);
+			}
 		}
 
 		public override int SaveChanges()
@@ -56,5 +72,7 @@ namespace EntityFramework.Inject.Spec.Samples
 		
 			return result;
 		}
+
+		public DbSet<Category> Categories { get; set; }
 	}
 }

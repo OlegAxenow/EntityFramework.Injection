@@ -27,7 +27,7 @@ namespace EntityFramework.Inject.Spec
 			var factory = new DbContextFactory();
 
 			// act
-			using (var context = factory.Create<BasicDbContext>(injectionSet))
+			using (var context = Create(factory, injectionSet))
 			{
 				context.ActionTypes.Add(new ActionType());
 				
@@ -48,7 +48,7 @@ namespace EntityFramework.Inject.Spec
 			int count;
 
 			// act
-			using (var context = factory.Create<BasicDbContext>(injectionSet))
+			using (var context = Create(factory, injectionSet))
 			{
 				count = context.SaveChanges();
 			}
@@ -72,12 +72,12 @@ namespace EntityFramework.Inject.Spec
 			var factory = new DbContextFactory();
 
 			// act
-			using (var context1 = factory.Create<BasicDbContext>(injectionSet))
+			using (var context1 = Create(factory, injectionSet))
 			{
 				context1.ActionTypes.Count();
 			}
 
-			using (var context2 = factory.Create<BasicDbContext>(injectionSet))
+			using (var context2 = Create(factory, injectionSet))
 			{
 				context2.ActionTypes.Count();
 			}
@@ -97,18 +97,23 @@ namespace EntityFramework.Inject.Spec
 			Type type2;
 
 			// act
-			using (var context1 = factory.Create<BasicDbContext>(injectionSet))
+			using (var context1 = Create(factory, injectionSet))
 			{
 				type1 = context1.GetType();
 			}
 
-			using (var context2 = factory.Create<BasicDbContext>(injectionSet))
+			using (var context2 = Create(factory, injectionSet))
 			{
 				type2 = context2.GetType();
 			}
 
 			// assert
 			Assert.That(type1, Is.EqualTo(type2));
+		}
+
+		private static BasicDbContext Create(DbContextFactory factory, InjectionSet injectionSet)
+		{
+			return factory.Create<BasicDbContext>(injectionSet, "EntityFrameworkInject");
 		}
 	}
 }
