@@ -6,7 +6,6 @@ namespace EntityFramework.Inject.Spec.Helpers
 	{
 		public void InitializeDatabase(T context)
 		{
-			context.Database.CreateIfNotExists();
 		}
 	}
 }

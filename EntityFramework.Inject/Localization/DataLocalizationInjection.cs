@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Data.Entity;
-using System.Data.Entity.ModelConfiguration.Configuration;
 using System.Linq.Expressions;
 using System.Reflection;
 
@@ -11,8 +10,10 @@ namespace EntityFramework.Inject.Localization
 	/// </summary>
 	public class DataLocalizationInjection : IDataLocalizationInjection
 	{
+		private const int ValuePropertiesCount = 5;
 		private readonly ILocalizedPropertyNamingConvention _convention;
 		private readonly int _localeIndex;
+		private readonly Func<Type, object> _createInitializer;
 
 		/// <summary>
 		/// Initializes injection with required parameters.
@@ -20,55 +21,55 @@ namespace EntityFramework.Inject.Localization
 		/// <param name="convention">One of the <see cref="ILocalizedPropertyNamingConvention"/> implementation.</param>
 		/// <param name="localeIndex">Index of locale to use. 
 		/// 0 cause using all indexed properties (default property ignored) and 1-5 cause using appropriate column for default property.</param>
-		public DataLocalizationInjection(ILocalizedPropertyNamingConvention convention, int localeIndex)
+		/// <param name="createInitializer">Optional <see cref="Func{T1,TResult}"/> to create <see cref="IDatabaseInitializer{TContext}"/>.
+		/// If not specified null will be used.</param>
+		public DataLocalizationInjection(ILocalizedPropertyNamingConvention convention, int localeIndex,
+			Func<Type, object> createInitializer = null)
 		{
 			if (convention == null) throw new ArgumentNullException("convention");
-			if (localeIndex < 0) throw new ArgumentOutOfRangeException("localeIndex");
+			if (localeIndex < 0 || localeIndex > ValuePropertiesCount) throw new ArgumentOutOfRangeException("localeIndex");
 
 			_convention = convention;
 			_localeIndex = localeIndex;
+			_createInitializer = createInitializer ?? (t => null);
 		}
 
 		public void ConfigureProperty<TEntity>(DbModelBuilder modelBuilder, 
 			Expression<Func<TEntity, string>> expression) where TEntity : class
 		{
-			var propertyConfiguration = modelBuilder.Entity<TEntity>().Property(expression);
-
 			if (expression.Body.NodeType != ExpressionType.MemberAccess) throw new ArgumentOutOfRangeException("expression");
+			
 			var memberExpression = (MemberExpression)expression.Body;
 			var valuePropertyInfo = memberExpression.Member as PropertyInfo;
 
 			if (valuePropertyInfo == null) throw new ArgumentOutOfRangeException("expression");
+			var valuePropertyName = valuePropertyInfo.Name;
 
 			if (memberExpression.Expression.NodeType != ExpressionType.MemberAccess) throw new ArgumentOutOfRangeException("expression");
 			var complexPropertyInfo = ((MemberExpression)memberExpression.Expression).Member as PropertyInfo;
 
 			if (complexPropertyInfo == null) throw new ArgumentOutOfRangeException("expression");
 
-			ConfigureProperty(complexPropertyInfo, valuePropertyInfo.Name, propertyConfiguration);
-		}
-
-		public void ConfigureProperty(PropertyInfo complexProperty, string valuePropertyName, StringPropertyConfiguration propertyConfiguration)
-		{
 			if (_localeIndex == 0)
 			{
 				// map indexed properties
 				if (valuePropertyName.Length > "Value".Length)
 				{
 					var index = int.Parse(valuePropertyName.Substring("Value".Length));
-					propertyConfiguration.HasColumnName(_convention.GetDbColumnName(complexProperty, index));
+					modelBuilder.Entity<TEntity>().Property(expression).HasColumnName(_convention.GetDbColumnName(complexPropertyInfo, index));
 				}
 			}
 			else
 			{
 				// map default property to appropriate index
 				if (valuePropertyName == "Value")
-					propertyConfiguration.HasColumnName(_convention.GetDbColumnName(complexProperty, _localeIndex));
+					modelBuilder.Entity<TEntity>().Property(expression).HasColumnName(_convention.GetDbColumnName(complexPropertyInfo, _localeIndex));
 			}
 		}
 
 		public void OnModelCreating(DbModelBuilder modelBuilder, DbContext context)
 		{
+			context.SetInitializer(_createInitializer);
 			IgnoreProperties(modelBuilder, _localeIndex == 0);
 		}
 

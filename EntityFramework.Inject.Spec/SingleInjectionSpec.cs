@@ -23,7 +23,7 @@ namespace EntityFramework.Inject.Spec
 		{
 			// arrange
 			var injection = new TestEntityValidationInjection();
-			var injectionSet = new InjectionSet(injection);
+			var injectionSet = new InjectionSet(injection, new TestModelCreationInjection());
 			var factory = new DbContextFactory();
 
 			// act

@@ -30,20 +30,29 @@ namespace EntityFramework.Inject.Spec.Samples
 			{
 				injections[i].OnModelCreating(modelBuilder, this);
 
-				injections[i].ConfigureProperty<Category>(modelBuilder, x => x.CategoryName.Value);
-				injections[i].ConfigureProperty<Category>(modelBuilder, x => x.CategoryName.Value1);
-				injections[i].ConfigureProperty<Category>(modelBuilder, x => x.CategoryName.Value2);
-				injections[i].ConfigureProperty<Category>(modelBuilder, x => x.CategoryName.Value3);
-				injections[i].ConfigureProperty<Category>(modelBuilder, x => x.CategoryName.Value4);
-				injections[i].ConfigureProperty<Category>(modelBuilder, x => x.CategoryName.Value5);
+				if (injections[i].LocaleIndex == 0)
+				{
+					injections[i].ConfigureProperty<Category>(modelBuilder, x => x.CategoryName.Value1);
+					injections[i].ConfigureProperty<Category>(modelBuilder, x => x.CategoryName.Value2);
+					injections[i].ConfigureProperty<Category>(modelBuilder, x => x.CategoryName.Value3);
+					injections[i].ConfigureProperty<Category>(modelBuilder, x => x.CategoryName.Value4);
+					injections[i].ConfigureProperty<Category>(modelBuilder, x => x.CategoryName.Value5);
 
-				injections[i].ConfigureProperty<Category>(modelBuilder, x => x.CategoryComputed.Value);
-				injections[i].ConfigureProperty<Category>(modelBuilder, x => x.CategoryComputed.Value1);
-				injections[i].ConfigureProperty<Category>(modelBuilder, x => x.CategoryComputed.Value2);
-				injections[i].ConfigureProperty<Category>(modelBuilder, x => x.CategoryComputed.Value3);
-				injections[i].ConfigureProperty<Category>(modelBuilder, x => x.CategoryComputed.Value4);
-				injections[i].ConfigureProperty<Category>(modelBuilder, x => x.CategoryComputed.Value5);
+					injections[i].ConfigureProperty<Category>(modelBuilder, x => x.CategoryComputed.Value1);
+					injections[i].ConfigureProperty<Category>(modelBuilder, x => x.CategoryComputed.Value2);
+					injections[i].ConfigureProperty<Category>(modelBuilder, x => x.CategoryComputed.Value3);
+					injections[i].ConfigureProperty<Category>(modelBuilder, x => x.CategoryComputed.Value4);
+					injections[i].ConfigureProperty<Category>(modelBuilder, x => x.CategoryComputed.Value5);
+				}
+				else
+				{
+					injections[i].ConfigureProperty<Category>(modelBuilder, x => x.CategoryName.Value);
+
+					injections[i].ConfigureProperty<Category>(modelBuilder, x => x.CategoryComputed.Value);
+				}
 			}
+
+			Database.SetInitializer<BasicDbContext_generated>(null);
 		}
 
 		public override int SaveChanges()

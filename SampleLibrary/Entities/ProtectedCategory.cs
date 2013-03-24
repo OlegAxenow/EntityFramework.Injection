@@ -1,10 +1,9 @@
-﻿using System.ComponentModel.DataAnnotations;
-using System.ComponentModel.DataAnnotations.Schema;
+﻿using System.ComponentModel.DataAnnotations.Schema;
 using EntityFramework.Inject.Localization;
 
 namespace SampleLibrary.Entities
 {
-	[Table("Category")]
+	[Table("Categories")]
 	public class ProtectedCategory
 	{
 		public void InitComputed()
@@ -12,8 +11,7 @@ namespace SampleLibrary.Entities
 			CategoryComputed = new ComputedLocalizedStrings();
 		}
 
-		[Key]
-		public int CategoryID { get; set; }
+		public int Id { get; set; }
 
 		public LocalizedStrings CategoryName { get; set; }
 

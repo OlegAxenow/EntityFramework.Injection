@@ -50,11 +50,13 @@ namespace EntityFramework.Inject.Emit
 
 			il.EmitGetInjections(injectionSetField, injectionType);
 
-			il.EmitInjectionLoop(injectionMethod, x => 
+			il.EmitInjectionLoop(x => 
 			{
 				x.Emit(OpCodes.Ldloc_3);
 				x.Emit(OpCodes.Ldarg_1);
 				x.Emit(OpCodes.Ldarg_2);
+
+				x.Emit(OpCodes.Callvirt, injectionMethod);
 			});
 
 			il.Emit(OpCodes.Ldloc_3);

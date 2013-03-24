@@ -24,20 +24,23 @@ namespace EntityFramework.Inject.Emit
 		///		var injections = _injectionSet.GetInjections&lt;IModelCreationInjection&gt;();
 		///	
 		///		for (int i = 0; i &lt; injections.Length; i++)
+		///		{
 		///			injections[i].OnModelCreating(modelBuilder);
+		///		}
 		/// }
 		/// </example>
-		[SuppressMessage("StyleCop.CSharp.DocumentationRules", "SA1650:ElementDocumentationMustBeSpelledCorrectly", Justification = "Reviewed. Suppression is OK here.")]
+		[SuppressMessage("StyleCop.CSharp.DocumentationRules", "SA1650:ElementDocumentationMustBeSpelledCorrectly", 
+			Justification = "Reviewed. Suppression is OK here.")]
 		public void Build(TypeBuilder typeBuilder, FieldBuilder injectionSetField, Type injectionType)
 		{
 			var parameterTypes = new[] { typeof(DbModelBuilder), typeof(DbContext) };
 
 			var methods = new Methods(typeBuilder, MethodName, new[] { typeof(DbModelBuilder) });
-			var injectionMethod = injectionType.GetMethod(MethodName, parameterTypes);
+			var injectionMethod = ReflectionHelper.GetMethod(injectionType, MethodName, BindingFlags.Instance | BindingFlags.Public, parameterTypes);
 
 			var il = methods.GetILGenerator(injectionType);
 
-			EmitHelper.DeclareLocalsForInjection(injectionType, il);
+			DeclareLocals(injectionType, il);
 
 			il.Emit(OpCodes.Ldarg_0);
 			il.Emit(OpCodes.Ldarg_1);
@@ -45,20 +48,28 @@ namespace EntityFramework.Inject.Emit
 
 			il.EmitGetInjections(injectionSetField, injectionType);
 
-			il.EmitInjectionLoop(injectionMethod, x =>
+			MethodInfo entityMethod = typeof(DbModelBuilder).GetMethod("Entity", BindingFlags.Public | BindingFlags.Instance);
+
+			il.EmitInjectionLoop(x =>
 			{
 				x.Emit(OpCodes.Ldarg_1);
 				x.Emit(OpCodes.Ldarg_0);
+
+				x.Emit(OpCodes.Callvirt, injectionMethod);
+
+				ConfigureDbSets(typeBuilder, x, injectionSetField, injectionType, entityMethod);
 			});
-
-			MethodInfo entityMethod = typeof(DbModelBuilder).GetMethod("Entity", BindingFlags.Public | BindingFlags.Instance);
-
-			ConfigureDbSets(typeBuilder, il, injectionSetField, injectionType, entityMethod);
 
 			il.Emit(OpCodes.Ret);
 		}
 
-		protected virtual void ConfigureDbSets(TypeBuilder typeBuilder, ILGenerator il, FieldBuilder injectionSetField, Type injectionType, 
+		protected virtual void DeclareLocals(Type injectionType, ILGenerator il)
+		{
+			EmitHelper.DeclareLocalsForInjection(injectionType, il);
+		}
+
+		protected virtual void ConfigureDbSets(TypeBuilder typeBuilder, ILGenerator il, FieldBuilder injectionSetField, 
+			Type injectionType, 
 			MethodInfo entityMethod)
 		{
 			var baseType = typeBuilder.BaseType;
@@ -80,7 +91,8 @@ namespace EntityFramework.Inject.Emit
 			}
 		}
 
-		protected virtual void ConfigureDbSet(Type entityType, ILGenerator il, FieldBuilder injectionSetField, Type injectionType, MethodInfo entityMethod, 
+		protected virtual void ConfigureDbSet(Type entityType, ILGenerator il, FieldBuilder injectionSetField, 
+			Type injectionType, MethodInfo entityMethod, 
 			Type entityConfigurationType)
 		{
 		}

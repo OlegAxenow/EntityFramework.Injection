@@ -46,13 +46,23 @@ namespace EntityFramework.Inject.Emit
 
 			il.EmitGetInjections(injectionSetField, injectionType);
 
-			il.EmitInjectionLoop(beforeMethod, x => x.Emit(OpCodes.Ldarg_0));
+			il.EmitInjectionLoop(x =>
+			{
+				x.Emit(OpCodes.Ldarg_0);
+
+				x.Emit(OpCodes.Callvirt, beforeMethod);
+			});
 
 			il.Emit(OpCodes.Ldarg_0);
 			il.Emit(OpCodes.Call, methods.BaseMethod);
 			il.Emit(OpCodes.Stloc_3);
 
-			il.EmitInjectionLoop(afterMethod, x => x.Emit(OpCodes.Ldarg_0));
+			il.EmitInjectionLoop(x =>
+			{
+				x.Emit(OpCodes.Ldarg_0);
+
+				x.Emit(OpCodes.Callvirt, afterMethod);
+			});
 
 			il.Emit(OpCodes.Ldloc_3);
 			
