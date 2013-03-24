@@ -146,7 +146,6 @@ namespace EntityFramework.Inject.Spec.Localization
 				{
 					var category = context.Categories.First(x => x.Id == 1);
 
-					// category.CategoryName = new LocalizedStrings{Value1 = "Beverages 2", Value2 = "12", Value3 = "122"};
 					category.CategoryName.Value1 = "Beverages 2";
 					category.NotLocalizedName = "test1";
 
@@ -154,8 +153,7 @@ namespace EntityFramework.Inject.Spec.Localization
 
 					category = context.Categories.First(x => x.Id == 1);
 
-					// TODO: uncomment when fix saving LocalizedStrings
-					// Assert.That(category.CategoryName.Value1, Is.EqualTo("Beverages2"));
+					Assert.That(category.CategoryName.Value1, Is.EqualTo("Beverages 2"));
 					Assert.That(category.CategoryComputed.Value1, Is.EqualTo("value1"));
 					Assert.That(category.NotLocalizedName, Is.EqualTo("test1"));
 
