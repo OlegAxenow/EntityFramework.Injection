@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Data.Entity;
-using System.Data.Entity.ModelConfiguration;
 using System.Diagnostics;
 using System.Diagnostics.CodeAnalysis;
 using System.Linq;
@@ -48,8 +47,6 @@ namespace EntityFramework.Inject.Emit
 
 			il.EmitGetInjections(injectionSetField, injectionType);
 
-			MethodInfo entityMethod = typeof(DbModelBuilder).GetMethod("Entity", BindingFlags.Public | BindingFlags.Instance);
-
 			il.EmitInjectionLoop(x =>
 			{
 				x.Emit(OpCodes.Ldarg_1);
@@ -57,7 +54,7 @@ namespace EntityFramework.Inject.Emit
 
 				x.Emit(OpCodes.Callvirt, injectionMethod);
 
-				ConfigureDbSets(typeBuilder, x, injectionSetField, injectionType, entityMethod);
+				ConfigureDbSets(typeBuilder, x);
 			});
 
 			il.Emit(OpCodes.Ret);
@@ -68,9 +65,7 @@ namespace EntityFramework.Inject.Emit
 			EmitHelper.DeclareLocalsForInjection(injectionType, il);
 		}
 
-		protected virtual void ConfigureDbSets(TypeBuilder typeBuilder, ILGenerator il, FieldBuilder injectionSetField, 
-			Type injectionType, 
-			MethodInfo entityMethod)
+		protected virtual void ConfigureDbSets(TypeBuilder typeBuilder, ILGenerator il)
 		{
 			var baseType = typeBuilder.BaseType;
 			Debug.Assert(baseType != null, "baseType != null");
@@ -85,15 +80,12 @@ namespace EntityFramework.Inject.Emit
 						string.Format("Property {0}.{1} should have one generic type argument.", baseType.FullName, property.Name));
 
 				var entityType = genericArguments[0];
-				Type entityConfigurationType = typeof(EntityTypeConfiguration<>).MakeGenericType(entityType);
-
-				ConfigureDbSet(entityType, il, injectionSetField, injectionType, entityMethod, entityConfigurationType);
+				
+				ConfigureDbSet(entityType, il);
 			}
 		}
 
-		protected virtual void ConfigureDbSet(Type entityType, ILGenerator il, FieldBuilder injectionSetField, 
-			Type injectionType, MethodInfo entityMethod, 
-			Type entityConfigurationType)
+		protected virtual void ConfigureDbSet(Type entityType, ILGenerator il)
 		{
 		}
 	}

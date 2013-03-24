@@ -59,9 +59,7 @@ namespace EntityFramework.Inject.Emit
 		/// </example>
 		[SuppressMessage("StyleCop.CSharp.DocumentationRules", "SA1650:ElementDocumentationMustBeSpelledCorrectly", 
 			Justification = "Reviewed. Suppression is OK here.")]
-		protected override void ConfigureDbSet(Type entityType, ILGenerator il, FieldBuilder injectionSetField, 
-			Type injectionType, 
-			MethodInfo entityMethod, Type entityConfigurationType)
+		protected override void ConfigureDbSet(Type entityType, ILGenerator il)
 		{
 			var properties = entityType.GetProperties(BindingFlags.Instance | BindingFlags.Public)
 			                           .Where(x => typeof(LocalizedStrings).IsAssignableFrom(x.PropertyType) ||
@@ -117,15 +115,8 @@ namespace EntityFramework.Inject.Emit
 			il.Emit(OpCodes.Stloc_S, 4);
 			il.Emit(OpCodes.Ldloc_S, 4);
 
-			il.Emit(OpCodes.Ldtoken, complexProperty.GetGetMethod());
-			il.EmitCall(OpCodes.Call, GetMethodFromHandle, null);
-			il.Emit(OpCodes.Castclass, typeof(MethodInfo));
-			il.EmitCall(OpCodes.Call, Property, null);
-
-			il.Emit(OpCodes.Ldtoken, valueProperty.GetGetMethod());
-			il.EmitCall(OpCodes.Call, GetMethodFromHandle, null);
-			il.Emit(OpCodes.Castclass, typeof(MethodInfo));
-			il.EmitCall(OpCodes.Call, Property, null);
+			EmitPropertyForLambda(il, complexProperty);
+			EmitPropertyForLambda(il, valueProperty);
 
 			il.Emit(OpCodes.Ldc_I4_1);
 			il.Emit(OpCodes.Newarr, typeof(ParameterExpression));
@@ -138,6 +129,14 @@ namespace EntityFramework.Inject.Emit
 			il.Emit(OpCodes.Ldloc_3);
 			il.EmitCall(OpCodes.Call, lambda, null);
 			il.EmitCall(OpCodes.Callvirt, configure, null);
+		}
+
+		private static void EmitPropertyForLambda(ILGenerator il, PropertyInfo complexProperty)
+		{
+			il.Emit(OpCodes.Ldtoken, complexProperty.GetGetMethod());
+			il.EmitCall(OpCodes.Call, GetMethodFromHandle, null);
+			il.Emit(OpCodes.Castclass, typeof(MethodInfo));
+			il.EmitCall(OpCodes.Call, Property, null);
 		}
 
 		protected override void DeclareLocals(Type injectionType, ILGenerator il)

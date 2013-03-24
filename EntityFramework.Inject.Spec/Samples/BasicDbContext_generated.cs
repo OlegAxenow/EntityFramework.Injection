@@ -51,8 +51,6 @@ namespace EntityFramework.Inject.Spec.Samples
 					injections[i].ConfigureProperty<Category>(modelBuilder, x => x.CategoryComputed.Value);
 				}
 			}
-
-			Database.SetInitializer<BasicDbContext_generated>(null);
 		}
 
 		public override int SaveChanges()
