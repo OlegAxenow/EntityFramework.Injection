@@ -51,7 +51,7 @@ namespace EntityFramework.Inject.Localization
 		{
 		}
 
-		public ConcurrentDictionary<PropertyInfo, Func<object>> GetComplexProperties(Type type)
+		private static ConcurrentDictionary<PropertyInfo, Func<object>> GetComplexProperties(Type type)
 		{
 			var result = PropertyCache.GetOrAdd(type, new ConcurrentDictionary<PropertyInfo, Func<object>>());
 			

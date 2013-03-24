@@ -11,33 +11,33 @@ namespace EntityFramework.Inject.Emit
 {
 	public class LocalizationModelCreationBuilder : ModelCreationBuilder
 	{
-		public static readonly MethodInfo GetTypeFromHandle = typeof(Type).GetMethod("GetTypeFromHandle",
+		protected static readonly MethodInfo GetTypeFromHandle = typeof(Type).GetMethod("GetTypeFromHandle",
 			BindingFlags.Static | BindingFlags.Public, null, new[] { typeof(RuntimeTypeHandle) }, null);
 
-		public static readonly MethodInfo GetMethodFromHandle = typeof(MethodBase).GetMethod("GetMethodFromHandle",
+		protected static readonly MethodInfo GetMethodFromHandle = typeof(MethodBase).GetMethod("GetMethodFromHandle",
 			BindingFlags.Static | BindingFlags.Public, null, new[] { typeof(RuntimeMethodHandle) }, null);
 
-		public static readonly MethodInfo Parameter = typeof(Expression).GetMethod("Parameter",
+		protected static readonly MethodInfo Parameter = typeof(Expression).GetMethod("Parameter",
 			BindingFlags.Static | BindingFlags.Public, null, new[] { typeof(Type), typeof(string) }, null);
 
-		public static readonly MethodInfo Property = typeof(Expression).GetMethod("Property",
+		protected static readonly MethodInfo Property = typeof(Expression).GetMethod("Property",
 			BindingFlags.Static | BindingFlags.Public, null, new[] { typeof(Expression), typeof(MethodInfo) }, null);
 
-		public static readonly MethodInfo GenericLambda = typeof(Expression).GetMethods(BindingFlags.Static | BindingFlags.Public)
+		protected static readonly MethodInfo GenericLambda = typeof(Expression).GetMethods(BindingFlags.Static | BindingFlags.Public)
 				.Single(x => x.Name == "Lambda" && x.IsGenericMethod && x.GetParameters().Skip(1).First().ParameterType == typeof(ParameterExpression[]));
 
-		public static readonly MethodInfo GenericConfigureProperty = typeof(IDataLocalizationInjection).GetMethod("ConfigureProperty");
+		protected static readonly MethodInfo GenericConfigureProperty = typeof(IDataLocalizationInjection).GetMethod("ConfigureProperty");
 
-		public static readonly PropertyInfo DefaultValueProperty =
+		protected static readonly PropertyInfo DefaultValueProperty =
 			typeof(LocalizedStrings).GetProperty("Value", BindingFlags.Instance | BindingFlags.Public);
 
-		public static readonly PropertyInfo DefaultComputedValueProperty =
+		protected static readonly PropertyInfo DefaultComputedValueProperty =
 			typeof(ComputedLocalizedStrings).GetProperty("Value", BindingFlags.Instance | BindingFlags.Public);
 
-		public static readonly PropertyInfo[] IndexedValueProperties =
+		protected static readonly PropertyInfo[] IndexedValueProperties =
 			typeof(LocalizedStrings).GetProperties(BindingFlags.Instance | BindingFlags.Public);
 
-		public static readonly PropertyInfo[] IndexedComputedValueProperties =
+		protected static readonly PropertyInfo[] IndexedComputedValueProperties =
 			typeof(ComputedLocalizedStrings).GetProperties(BindingFlags.Instance | BindingFlags.Public);
 
 		/// <summary>

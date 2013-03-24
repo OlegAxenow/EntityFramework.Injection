@@ -39,8 +39,7 @@ namespace EntityFramework.Inject.Spec.Localization
 				AssertValues(categories, c => c.CategoryName.Value, "Beverages", "Condiments", "Confections", "Dairy Products",
 					"Grains/Cereals",
 					"Meat/Poultry", "Produce", "Seafood");
-				AssertValues(categories, c => c.CategoryComputed.Value, "value1", "value1", "value1", "value1",
-					"value1", "value1", "value1", "value1");
+				AssertComputedValues(categories, 1);
 				AssertEmptyIndexedNames(categories);
 			}
 
@@ -48,8 +47,7 @@ namespace EntityFramework.Inject.Spec.Localization
 			{
 				var categories = context.Categories.ToArray();
 				AssertValues(categories, c => c.CategoryName.Value, "1", "2", "3", "4", "5", "6", "7", "8");
-				AssertValues(categories, c => c.CategoryComputed.Value, "value2", "value2", "value2", "value2",
-					"value2", "value2", "value2", "value2");
+				AssertComputedValues(categories, 2);
 				AssertEmptyIndexedNames(categories);
 			}
 
@@ -57,21 +55,9 @@ namespace EntityFramework.Inject.Spec.Localization
 			{
 				var categories = context.Categories.ToArray();
 				AssertValues(categories, c => c.CategoryName.Value, "11", "22", "33", "44", "55", "66", "77", "88");
-				AssertValues(categories, c => c.CategoryComputed.Value, "value3", "value3", "value3", "value3",
-					"value3", "value3", "value3", "value3");
+				AssertComputedValues(categories, 3);
 				AssertEmptyIndexedNames(categories);
 			}
-		}
-
-		private static void AssertEmptyIndexedNames(Category[] categories)
-		{
-			AssertValues(categories, c => c.CategoryName.Value1, null, null, null, null, null, null, null, null);
-			AssertValues(categories, c => c.CategoryName.Value2, null, null, null, null, null, null, null, null);
-			AssertValues(categories, c => c.CategoryName.Value3, null, null, null, null, null, null, null, null);
-
-			AssertValues(categories, c => c.CategoryComputed.Value1, null, null, null, null, null, null, null, null);
-			AssertValues(categories, c => c.CategoryComputed.Value2, null, null, null, null, null, null, null, null);
-			AssertValues(categories, c => c.CategoryComputed.Value3, null, null, null, null, null, null, null, null);
 		}
 
 		[Test]
@@ -80,7 +66,7 @@ namespace EntityFramework.Inject.Spec.Localization
 			using (var context = Create<LocalizedDbContext>())
 			{
 				var categories = context.Categories.ToArray();
-				AssertValues(categories, c => c.CategoryName.Value, null, null, null, null, null, null, null, null);
+				AssertAllNulls(categories, c => c.CategoryName.Value);
 				AssertValues(categories, c => c.CategoryName.Value1, "Beverages", "Condiments", "Confections", "Dairy Products",
 					"Grains/Cereals",
 					"Meat/Poultry", "Produce", "Seafood");
@@ -171,6 +157,28 @@ namespace EntityFramework.Inject.Spec.Localization
 		public void Inproper_locale_index_should_produce_exception(int index)
 		{
 			Assert.Throws<ArgumentOutOfRangeException>(() => Create<BasicDbContext>(index));
+		}
+
+		private static void AssertComputedValues(Category[] categories, int index)
+		{
+			var value = "value" + index;
+			AssertValues(categories, c => c.CategoryComputed.Value, value, value, value, value, value, value, value, value);
+		}
+
+		private static void AssertEmptyIndexedNames(Category[] categories)
+		{
+			AssertAllNulls(categories, c => c.CategoryName.Value1);
+			AssertAllNulls(categories, c => c.CategoryName.Value2);
+			AssertAllNulls(categories, c => c.CategoryName.Value3);
+
+			AssertAllNulls(categories, c => c.CategoryComputed.Value1);
+			AssertAllNulls(categories, c => c.CategoryComputed.Value2);
+			AssertAllNulls(categories, c => c.CategoryComputed.Value3);
+		}
+
+		private static void AssertAllNulls(Category[] categories, Func<Category, string> property)
+		{
+			AssertValues(categories, property, null, null, null, null, null, null, null, null);
 		}
 
 		private static void AssertValues(Category[] categories, Func<Category, string> getProperty, params string[] names)

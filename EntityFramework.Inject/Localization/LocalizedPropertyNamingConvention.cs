@@ -36,7 +36,7 @@ namespace EntityFramework.Inject.Localization
 			return dbColumnName + _localeSeparator + localeIndex;
 		}
 
-		protected string GetDbColumnName(PropertyInfo property)
+		private string GetDbColumnName(PropertyInfo property)
 		{
 			var columnAttribute = property
 				.GetCustomAttributes(typeof(ColumnAttribute), true).Cast<ColumnAttribute>().FirstOrDefault();
