@@ -58,7 +58,6 @@
     <Compile Include="Entities\TestDbContext1.cs" />
     <Compile Include="Entities\TestDbContext2.cs" />
     <Compile Include="Entities\TestDbContext3.cs" />
-    <Compile Include="Helpers\TestDatabaseInitializer.cs" />
     <Compile Include="Helpers\MultiThreadTestHelper.cs" />
     <Compile Include="Localization\DataLocalizationInjectionSpec.cs" />
     <Compile Include="Localization\DbContextFactorySpec.cs" />

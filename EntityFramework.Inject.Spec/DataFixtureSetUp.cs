@@ -15,15 +15,16 @@ namespace EntityFramework.Inject.Spec
 		[SetUp]
 		public void SetUp()
 		{
-			Database.SetInitializer(new TestDatabaseInitializer<BasicDbContext>());
-			Database.SetInitializer(new TestDatabaseInitializer<LocalizedDbContext>());
-			Database.SetInitializer(new TestDatabaseInitializer<DbContext>());
-			Database.SetInitializer(new TestDatabaseInitializer<TestDbContext>());
-			Database.SetInitializer(new TestDatabaseInitializer<TestDbContext1>());
-			Database.SetInitializer(new TestDatabaseInitializer<TestDbContext2>());
-			Database.SetInitializer(new TestDatabaseInitializer<TestDbContext3>());
-			Database.SetInitializer(new TestDatabaseInitializer<TestConcurrencyDbContext>());
-			Database.SetInitializer(new TestDatabaseInitializer<BasicDbContext_generated>());
+			Database.SetInitializer<BasicDbContext>(null);
+			Database.SetInitializer<LocalizedDbContext>(null);
+			Database.SetInitializer<TestDbContext>(null);
+			Database.SetInitializer<TestDbContext1>(null);
+			Database.SetInitializer<TestDbContext2>(null);
+			Database.SetInitializer<TestDbContext3>(null);
+			Database.SetInitializer<TestConcurrencyDbContext>(null);
+			Database.SetInitializer<BasicDbContext_generated>(null);
+
+			Database.SetInitializer(new CreateDatabaseIfNotExists<DbContext>());
 
 			AppDomain.CurrentDomain.SetData("DataDirectory", Path.Combine(AppDomain.CurrentDomain.BaseDirectory, string.Empty));
 
