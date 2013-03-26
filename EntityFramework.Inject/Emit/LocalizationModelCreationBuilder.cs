@@ -9,8 +9,9 @@ using EntityFramework.Inject.Localization;
 
 namespace EntityFramework.Inject.Emit
 {
-	public class LocalizationModelCreationBuilder : ModelCreationBuilder
+	public class LocalizationModelCreationBuilder<TLocalizedStrings, TComputedLocalizedStrings> : ModelCreationBuilder
 	{
+// ReSharper disable StaticFieldInGenericType
 		protected static readonly MethodInfo GetTypeFromHandle = typeof(Type).GetMethod("GetTypeFromHandle",
 			BindingFlags.Static | BindingFlags.Public, null, new[] { typeof(RuntimeTypeHandle) }, null);
 
@@ -32,13 +33,14 @@ namespace EntityFramework.Inject.Emit
 			typeof(LocalizedStrings).GetProperty("Value", BindingFlags.Instance | BindingFlags.Public);
 
 		protected static readonly PropertyInfo DefaultComputedValueProperty =
-			typeof(ComputedLocalizedStrings).GetProperty("Value", BindingFlags.Instance | BindingFlags.Public);
+			typeof(TComputedLocalizedStrings).GetProperty("Value", BindingFlags.Instance | BindingFlags.Public);
 
 		protected static readonly PropertyInfo[] IndexedValueProperties =
-			typeof(LocalizedStrings).GetProperties(BindingFlags.Instance | BindingFlags.Public);
+			typeof(TLocalizedStrings).GetProperties(BindingFlags.Instance | BindingFlags.Public);
 
 		protected static readonly PropertyInfo[] IndexedComputedValueProperties =
-			typeof(ComputedLocalizedStrings).GetProperties(BindingFlags.Instance | BindingFlags.Public);
+			typeof(TComputedLocalizedStrings).GetProperties(BindingFlags.Instance | BindingFlags.Public);
+// ReSharper restore StaticFieldInGenericType
 
 		/// <summary>
 		/// Builds method OnModelCreating (see example).
@@ -62,8 +64,8 @@ namespace EntityFramework.Inject.Emit
 		protected override void ConfigureDbSet(Type entityType, ILGenerator il)
 		{
 			var properties = entityType.GetProperties(BindingFlags.Instance | BindingFlags.Public)
-			                           .Where(x => typeof(LocalizedStrings).IsAssignableFrom(x.PropertyType) ||
-				                           typeof(ComputedLocalizedStrings).IsAssignableFrom(x.PropertyType))
+			                           .Where(x => typeof(TLocalizedStrings).IsAssignableFrom(x.PropertyType) ||
+				                           typeof(TComputedLocalizedStrings).IsAssignableFrom(x.PropertyType))
 			                           .ToArray();
 
 			var funcType = typeof(Func<,>).MakeGenericType(entityType, typeof(string));
@@ -76,7 +78,7 @@ namespace EntityFramework.Inject.Emit
 
 			foreach (var complexProperty in properties)
 			{
-				var isComputed = typeof(ComputedLocalizedStrings).IsAssignableFrom(complexProperty.PropertyType);
+				var isComputed = typeof(TComputedLocalizedStrings).IsAssignableFrom(complexProperty.PropertyType);
 				ConfigureProperties(entityType, il, complexProperty, lambda, configure, 
 					isComputed ? IndexedComputedValueProperties : IndexedValueProperties, 
 					isComputed ? DefaultComputedValueProperty : DefaultValueProperty);

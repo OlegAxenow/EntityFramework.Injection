@@ -20,7 +20,8 @@ namespace EntityFramework.Inject.Spec.Localization
 		public void TestFixtureSetUp()
 		{
 			_factory = new DbContextFactory(/*saveAssembliesToDisk: true*/);
-			MethodBuilderRegistry.Register<IDataLocalizationInjection>(new LocalizationModelCreationBuilder());
+			MethodBuilderRegistry.Register<IDataLocalizationInjection>(
+				new LocalizationModelCreationBuilder<LocalizedStrings, ComputedLocalizedStrings>());
 			MethodBuilderRegistry.Register<ISaveChangesInjection>(new SaveChangesBuilder());
 		}
 
