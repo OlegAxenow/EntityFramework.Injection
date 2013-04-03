@@ -43,7 +43,7 @@
       <HintPath>..\packages\EntityFramework.5.0.0\lib\net40\EntityFramework.dll</HintPath>
     </Reference>
     <Reference Include="Method.Inject">
-      <HintPath>..\packages\Method.Inject.1.0.26\lib\net40\Method.Inject.dll</HintPath>
+      <HintPath>..\packages\Method.Inject.1.1.33\lib\net40\Method.Inject.dll</HintPath>
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.ComponentModel.DataAnnotations" />
@@ -57,7 +57,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="..\EntityFramework.Inject\Emit\*.cs" />
-    <Compile Include="..\EntityFramework.Inject\Helpers\*.cs" />
+    <Compile Include="..\EntityFramework.Inject\Localization\*.cs" />
     <Compile Include="..\EntityFramework.Inject\Properties\*.cs" />
     <Compile Include="..\EntityFramework.Inject\*.cs" />
   </ItemGroup>

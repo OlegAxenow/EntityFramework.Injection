@@ -48,12 +48,18 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="..\SampleLibrary\Entities\*.cs" />
-	<Compile Include="..\SampleLibrary\Properties\*.cs" />
-	<Compile Include="..\SampleLibrary\*.cs" />
+    <Compile Include="..\SampleLibrary\Properties\*.cs" />
+    <Compile Include="..\SampleLibrary\*.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="App.config" />
     <None Include="packages.config" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\EntityFramework.Inject.net40\EntityFramework.Inject.net40.csproj">
+      <Project>{ea824fc2-4471-49df-964e-614e74114ba1}</Project>
+      <Name>EntityFramework.Inject.net40</Name>
+    </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <Import Project="$(SolutionDir)\.nuget\nuget.targets" />

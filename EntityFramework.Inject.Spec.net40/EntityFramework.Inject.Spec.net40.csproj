@@ -37,7 +37,7 @@
       <HintPath>..\packages\EntityFramework.5.0.0\lib\net40\EntityFramework.dll</HintPath>
     </Reference>
     <Reference Include="Method.Inject">
-      <HintPath>..\packages\Method.Inject.1.0.26\lib\net40\Method.Inject.dll</HintPath>
+      <HintPath>..\packages\Method.Inject.1.1.33\lib\net40\Method.Inject.dll</HintPath>
     </Reference>
     <Reference Include="nunit.framework">
       <HintPath>..\packages\NUnit.2.6.2\lib\nunit.framework.dll</HintPath>
@@ -46,6 +46,7 @@
     <Reference Include="System.ComponentModel.DataAnnotations" />
     <Reference Include="System.Core" />
     <Reference Include="System.Data.Entity" />
+    <Reference Include="System.Transactions" />
     <Reference Include="System.Xml.Linq" />
     <Reference Include="System.Data.DataSetExtensions" />
     <Reference Include="Microsoft.CSharp" />
@@ -53,8 +54,12 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="..\EntityFramework.Inject.Spec\Entities\*.cs" />
+    <Compile Include="..\EntityFramework.Inject.Spec\Helpers\*.cs" />
+    <Compile Include="..\EntityFramework.Inject.Spec\Localization\*.cs" />
     <Compile Include="..\EntityFramework.Inject.Spec\Migrations\*.cs" />
     <Compile Include="..\EntityFramework.Inject.Spec\Properties\*.cs" />
+    <Compile Include="..\EntityFramework.Inject.Spec\Samples\*.cs" />
     <Compile Include="..\EntityFramework.Inject.Spec\*.cs" />
   </ItemGroup>
   <ItemGroup>
