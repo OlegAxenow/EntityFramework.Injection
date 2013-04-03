@@ -27,7 +27,7 @@ namespace EntityFramework.Inject.Spec.Localization
 
 		private T Create<T>(int localeIndex = 0) where T : DbContext
 		{
-			var localizationInjection = new DataLocalizationInjection(new LocalizedPropertyNamingConvention("_"), localeIndex);
+			var localizationInjection = new DataLocalizationInjection(localeIndex);
 			return _factory.Create<T>(new InjectionSet(localizationInjection, new ComplexTypeInitializationInjection()), "EntityFrameworkInject");
 		}
 

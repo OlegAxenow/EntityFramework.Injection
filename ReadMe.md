@@ -35,6 +35,7 @@ The source code depends on following NuGet packages:
 
 - EntityFramework
 - NUnit (only for EntityFramework.Inject.Spec)
+- [Method.Injection](https://github.com/OlegAxenow/Method.Injection) (provides basic method builders and injections functionality)
 
 ## Performance
 
@@ -51,12 +52,41 @@ This is the **main advantage** of this library, because it allow *to setup model
 
 Let me explain the details. Normally, you can setup model, e.g. `ComplexType` only once for `DbContext`. But for some complex tasks, like localization of data, you can want to setup some `ComplexTypes` depending on some parameters like `Thread.CurrentUICulture`.
 
-**!TODO!**
+In `DataLocalizationInjectionSpec` you can see how to register method builder for two complex type's localization:
+
+	MethodBuilderRegistry.Register<IDataLocalizationInjection>(
+		new LocalizationModelCreationBuilder<LocalizedStrings, ComputedLocalizedStrings>());
+
+We need to use two complex types to process both normal and computed database fields.
+Each complex type has following properties:
+
+		public string Value { get; set; }
+
+		public string Value1 { get; set; }
+		public string Value2 { get; set; }
+		public string Value3 { get; set; }
+		public string Value4 { get; set; }
+		public string Value5 { get; set; }
+
+We should use database table columns like these:
+
+	[Name_1]     NVARCHAR (100) NULL,
+    [Name_2]     NVARCHAR (100) NULL,
+    [Name_3]     NVARCHAR (100) NULL,
+    [Name_4]     NVARCHAR (100) NULL,
+    [Name_5]     NVARCHAR (100) NULL,
+
+Then, we need to create localization injection with locale index.
+Zero locale index cause using all indexed properties (default property ignored) and 1-5 cause using appropriate column for default property.
+
+As a result, when we create context with new DataLocalizationInjection(1) and access LocalizedStrings.Value property, this property will be mapped to "Name_1" column. For DataLocalizationInjection(2) this property will be mapped to "Name_2" column and so on.
+When we need to show or edit all NameX fields, we should use DataLocalizationInjection(0) and corresponding "ValueX" properties.
 
 ### SaveChanges
 
-**!TODO!**
+This method corresponds to `ISaveChangesInjection`.
+You can see the sample in `ComplexTypeInitializationInjection`. This injection allows to not to care about initializing properties with LocalizedStrings or ComputedLocalizedStrings types.
 
 ### ValidateEntity
 
-**!TODO!**
+This method corresponds to `IEntityValidationInjection`. You can use `IEntityValidationInjection` as the single point for global validation (e.g. for DateTimeKind.Utc checking).

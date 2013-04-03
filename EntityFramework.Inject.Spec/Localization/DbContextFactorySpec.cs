@@ -25,8 +25,7 @@ namespace EntityFramework.Inject.Spec.Localization
 
 		private T Create<T>(int localeIndex = 0) where T : DbContext
 		{
-			var injection = new DataLocalizationInjection(new LocalizedPropertyNamingConvention("_"), 
-				localeIndex);
+			var injection = new DataLocalizationInjection(localeIndex);
 			return _factory.Create<T>(new InjectionSet(injection), "EntityFrameworkInject");
 		}
 
@@ -57,7 +56,7 @@ namespace EntityFramework.Inject.Spec.Localization
 		[Test]
 		public void Types_should_be_reused_with_different_combinations()
 		{
-			var injection = new DataLocalizationInjection(new LocalizedPropertyNamingConvention("_"), 1);
+			var injection = new DataLocalizationInjection(1);
 			
 			int assemblyCount = AppDomain.CurrentDomain.GetAssemblies().Length;
 

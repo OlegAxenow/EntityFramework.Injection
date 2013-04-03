@@ -18,16 +18,16 @@ namespace EntityFramework.Inject.Localization
 		/// <summary>
 		/// Initializes injection with required parameters.
 		/// </summary>
-		/// <param name="convention">One of the <see cref="ILocalizedPropertyNamingConvention"/> implementation.</param>
 		/// <param name="localeIndex">Index of locale to use. 
-		/// 0 cause using all indexed properties (default property ignored) and 1-5 cause using appropriate column for default property.</param>
+		///     0 cause using all indexed properties (default property ignored) and 1-5 cause using appropriate column for default property.</param>
+		/// <param name="convention">One of the <see cref="ILocalizedPropertyNamingConvention"/> implementation. 
+		/// If not specified, new LocalizedPropertyNamingConvention("_") will be used.</param>
 		/// <param name="createInitializer">Optional <see cref="Func{T1,TResult}"/> to create <see cref="IDatabaseInitializer{TContext}"/>.
 		/// If not specified null will be used.</param>
-		public DataLocalizationInjection(ILocalizedPropertyNamingConvention convention, int localeIndex,
-			Func<Type, object> createInitializer = null)
+		public DataLocalizationInjection(int localeIndex, ILocalizedPropertyNamingConvention convention = null, Func<Type, object> createInitializer = null)
 		{
-			if (convention == null) throw new ArgumentNullException("convention");
 			if (localeIndex < 0 || localeIndex > ValuePropertiesCount) throw new ArgumentOutOfRangeException("localeIndex");
+			if (convention == null) convention = new LocalizedPropertyNamingConvention("_");
 
 			_convention = convention;
 			_localeIndex = localeIndex;

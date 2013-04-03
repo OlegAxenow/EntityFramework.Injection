@@ -2,12 +2,12 @@
 
 In rare cases you can want to add new implementation of IMethodBuilder.
 
-For Entity Framework 5.0 a reasonable IMethodBuilder's already implemented. But you still can to override some behavior with your own implementation.
+For Entity Framework 5.0 a reasonable IMethodBuilder's already implemented. But you still can override some behavior with your own implementation.
 You can use SaveChangesBuilder as an example and don't forget to use EmitHelper, if applicable.
 
 ## Implementation details
 
-Each `IDbContextInjection` should correspond to one `IMethodBuilder` with the help of `MethodBuilderRegistry`.
+Each `IMethodInjection` should correspond to one `IMethodBuilder` with the help of `MethodBuilderRegistry`.
 
 `DbContextFactory` uses `InjectedAssemblyBuilder` to build dynamic assembly with one or more types (see `Append` method).
 `InjectedAssemblyBuilder` in its turn, uses `InjectedTypeBuilder` to build class with constructor and `InjectionSet` field and calls each IMethodBuilder to add one method to generated context.
