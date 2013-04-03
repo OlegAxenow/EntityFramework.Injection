@@ -8,6 +8,10 @@ For example, you can even conditionally setup ComplexType to allow localization 
 
 ## Getting started
 
+You can build it from source or install as NuGet package:
+
+	PM> Install-Package EntityFramework.Inject
+
 You can inject dependency into the any **DbContext** without changing it with the the help of few lines of code:
 
 ```cs
