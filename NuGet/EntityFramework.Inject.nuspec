@@ -1,0 +1,16 @@
+<?xml version="1.0"?>
+<package >
+  <metadata>
+    <id>Method.Inject</id>
+    <version>1.1.0</version>
+    <authors>Oleg Aksenov</authors>
+    <owners>Oleg Aksenov</owners>
+    <licenseUrl>http://opensource.org/licenses/MIT</licenseUrl>
+    <projectUrl>https://github.com/OlegAxenow/EntityFramework.Injection</projectUrl>
+    <requireLicenseAcceptance>false</requireLicenseAcceptance>
+    <description>The goal of this project is to provide a way to inject a dependency into a virtual method with simple lightweight library (it will be used in other projects).</description>
+    <releaseNotes></releaseNotes>
+    <copyright>Copyright 2013 Oleg Aksenov</copyright>
+    <tags>Dependency Injection EntityFramework DbContext Reflection.Emit</tags>
+  </metadata>
+</package>
