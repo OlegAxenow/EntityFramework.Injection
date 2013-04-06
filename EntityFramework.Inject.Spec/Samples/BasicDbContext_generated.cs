@@ -63,7 +63,7 @@ namespace EntityFramework.Inject.Spec.Samples
 			int result = base.SaveChanges();
 
 			for (int i = 0; i < injections.Length; i++)
-				injections[i].OnBeforeSaveChanges(this);
+				injections[i].OnAfterSaveChanges(this);
 			
 			return result;
 		}

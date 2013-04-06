@@ -2,7 +2,6 @@
 using System.Data.Entity;
 using System.IO;
 using EntityFramework.Inject.Spec.Entities;
-using EntityFramework.Inject.Spec.Helpers;
 using EntityFramework.Inject.Spec.Samples;
 using NUnit.Framework;
 using SampleLibrary.Entities;
