@@ -10,7 +10,6 @@ namespace EntityFramework.Inject.Localization
 	/// </summary>
 	public class DataLocalizationInjection : IDataLocalizationInjection
 	{
-		private const int ValuePropertiesCount = 5;
 		private readonly ILocalizedPropertyNamingConvention _convention;
 		private readonly int _localeIndex;
 		private readonly Func<Type, object> _createInitializer;
@@ -26,7 +25,7 @@ namespace EntityFramework.Inject.Localization
 		/// If not specified null will be used.</param>
 		public DataLocalizationInjection(int localeIndex, ILocalizedPropertyNamingConvention convention = null, Func<Type, object> createInitializer = null)
 		{
-			if (localeIndex < 0 || localeIndex > ValuePropertiesCount) throw new ArgumentOutOfRangeException("localeIndex");
+			if (localeIndex < 0) throw new ArgumentOutOfRangeException("localeIndex");
 			if (convention == null) convention = new LocalizedPropertyNamingConvention("_");
 
 			_convention = convention;
@@ -37,13 +36,8 @@ namespace EntityFramework.Inject.Localization
 		public void ConfigureProperty<TEntity>(DbModelBuilder modelBuilder, 
 			Expression<Func<TEntity, string>> expression) where TEntity : class
 		{
-			if (expression.Body.NodeType != ExpressionType.MemberAccess) throw new ArgumentOutOfRangeException("expression");
-			
-			var memberExpression = (MemberExpression)expression.Body;
-			var valuePropertyInfo = memberExpression.Member as PropertyInfo;
-
-			if (valuePropertyInfo == null) throw new ArgumentOutOfRangeException("expression");
-			var valuePropertyName = valuePropertyInfo.Name;
+			var memberExpression = GetMemberExpression(expression);
+			var valuePropertyName = GetValuePropertyName(memberExpression);
 
 			if (memberExpression.Expression.NodeType != ExpressionType.MemberAccess) throw new ArgumentOutOfRangeException("expression");
 			var complexPropertyInfo = ((MemberExpression)memberExpression.Expression).Member as PropertyInfo;
@@ -55,7 +49,7 @@ namespace EntityFramework.Inject.Localization
 				// map indexed properties
 				if (valuePropertyName.Length > "Value".Length)
 				{
-					var index = int.Parse(valuePropertyName.Substring("Value".Length));
+					var index = GetPropertyIndex(valuePropertyName);
 					modelBuilder.Entity<TEntity>().Property(expression).HasColumnName(_convention.GetDbColumnName(complexPropertyInfo, index));
 				}
 			}
@@ -67,33 +61,51 @@ namespace EntityFramework.Inject.Localization
 			}
 		}
 
-		public void OnModelCreating(DbModelBuilder modelBuilder, DbContext context)
+		private static MemberExpression GetMemberExpression<TEntity>(Expression<Func<TEntity, string>> expression)
 		{
-			context.SetInitializer(_createInitializer);
-			IgnoreProperties(modelBuilder, _localeIndex == 0);
+			if (expression.Body.NodeType != ExpressionType.MemberAccess) throw new ArgumentOutOfRangeException("expression");
+
+			var memberExpression = (MemberExpression)expression.Body;
+			return memberExpression;
 		}
 
-		private static void IgnoreProperties(DbModelBuilder modelBuilder, bool defaultOnly)
+		public void IgnoreProperty<TComplexType>(DbModelBuilder modelBuilder,
+			Expression<Func<TComplexType, string>> expression) where TComplexType : class
 		{
-			if (defaultOnly)
+			var memberExpression = GetMemberExpression(expression);
+			var valuePropertyName = GetValuePropertyName(memberExpression);
+
+			if (_localeIndex == 0)
 			{
-				modelBuilder.ComplexType<LocalizedStrings>().Ignore(x => x.Value);
-				modelBuilder.ComplexType<ComputedLocalizedStrings>().Ignore(x => x.Value);
+				// ignore default property
+				if (valuePropertyName == "Value")
+					modelBuilder.ComplexType<TComplexType>().Ignore(expression);	
 			}
 			else
 			{
-				modelBuilder.ComplexType<LocalizedStrings>().Ignore(x => x.Value1);
-				modelBuilder.ComplexType<LocalizedStrings>().Ignore(x => x.Value2);
-				modelBuilder.ComplexType<LocalizedStrings>().Ignore(x => x.Value3);
-				modelBuilder.ComplexType<LocalizedStrings>().Ignore(x => x.Value4);
-				modelBuilder.ComplexType<LocalizedStrings>().Ignore(x => x.Value5);
-
-				modelBuilder.ComplexType<ComputedLocalizedStrings>().Ignore(x => x.Value1);
-				modelBuilder.ComplexType<ComputedLocalizedStrings>().Ignore(x => x.Value2);
-				modelBuilder.ComplexType<ComputedLocalizedStrings>().Ignore(x => x.Value3);
-				modelBuilder.ComplexType<ComputedLocalizedStrings>().Ignore(x => x.Value4);
-				modelBuilder.ComplexType<ComputedLocalizedStrings>().Ignore(x => x.Value5);
+				// ignore indexed properties
+				if (valuePropertyName.Length > "Value".Length)
+					modelBuilder.ComplexType<TComplexType>().Ignore(expression);
 			}
+		}
+
+		private static string GetValuePropertyName(MemberExpression expression)
+		{
+			var valuePropertyInfo = expression.Member as PropertyInfo;
+
+			if (valuePropertyInfo == null) throw new ArgumentOutOfRangeException("expression");
+			var valuePropertyName = valuePropertyInfo.Name;
+			return valuePropertyName;
+		}
+
+		private static int GetPropertyIndex(string valuePropertyName)
+		{
+			return int.Parse(valuePropertyName.Substring("Value".Length));
+		}
+
+		public void OnModelCreating(DbModelBuilder modelBuilder, DbContext context)
+		{
+			context.SetInitializer(_createInitializer);
 		}
 
 		public string UniqueKey

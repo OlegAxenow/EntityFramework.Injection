@@ -8,14 +8,14 @@ namespace SampleLibrary.Entities
 	{
 		public void InitComputed()
 		{
-			CategoryComputed = new ComputedLocalizedStrings();
+			CategoryComputed = new ComputedLocalizedStrings3();
 		}
 
 		public int Id { get; set; }
 
-		public LocalizedStrings CategoryName { get; set; }
+		public LocalizedStrings3 CategoryName { get; set; }
 
-		public ComputedLocalizedStrings CategoryComputed { get; protected set; }
+		public ComputedLocalizedStrings3 CategoryComputed { get; protected set; }
 
 		public string NotLocalizedName { get; set; }
 	}

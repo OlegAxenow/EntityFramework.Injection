@@ -5,32 +5,39 @@ using System.Linq;
 using System.Linq.Expressions;
 using System.Reflection;
 using System.Reflection.Emit;
-using EntityFramework.Inject.Localization;
 
 namespace EntityFramework.Inject.Emit
 {
 	public class LocalizationModelCreationBuilder<TLocalizedStrings, TComputedLocalizedStrings> : ModelCreationBuilder
+		where TLocalizedStrings : class
+		where TComputedLocalizedStrings : class
 	{
-// ReSharper disable StaticFieldInGenericType
-		protected static readonly MethodInfo GetTypeFromHandle = typeof(Type).GetMethod("GetTypeFromHandle",
+		// ReSharper disable StaticFieldInGenericType
+		protected static readonly MethodInfo GetTypeFromHandle = typeof(Type).GetMethod("GetTypeFromHandle", 
 			BindingFlags.Static | BindingFlags.Public, null, new[] { typeof(RuntimeTypeHandle) }, null);
 
-		protected static readonly MethodInfo GetMethodFromHandle = typeof(MethodBase).GetMethod("GetMethodFromHandle",
+		protected static readonly MethodInfo GetMethodFromHandle = typeof(MethodBase).GetMethod("GetMethodFromHandle", 
 			BindingFlags.Static | BindingFlags.Public, null, new[] { typeof(RuntimeMethodHandle) }, null);
 
-		protected static readonly MethodInfo Parameter = typeof(Expression).GetMethod("Parameter",
+		protected static readonly MethodInfo Parameter = typeof(Expression).GetMethod("Parameter", 
 			BindingFlags.Static | BindingFlags.Public, null, new[] { typeof(Type), typeof(string) }, null);
 
-		protected static readonly MethodInfo Property = typeof(Expression).GetMethod("Property",
+		protected static readonly MethodInfo Property = typeof(Expression).GetMethod("Property", 
 			BindingFlags.Static | BindingFlags.Public, null, new[] { typeof(Expression), typeof(MethodInfo) }, null);
 
-		protected static readonly MethodInfo GenericLambda = typeof(Expression).GetMethods(BindingFlags.Static | BindingFlags.Public)
-				.Single(x => x.Name == "Lambda" && x.IsGenericMethod && x.GetParameters().Skip(1).First().ParameterType == typeof(ParameterExpression[]));
+		protected static readonly MethodInfo GenericLambda = typeof(Expression)
+			.GetMethods(BindingFlags.Static | BindingFlags.Public)
+			.Single(x => x.Name == "Lambda" && x.IsGenericMethod && 
+				x.GetParameters().Skip(1).First().ParameterType == typeof(ParameterExpression[]));
 
-		protected static readonly MethodInfo GenericConfigureProperty = typeof(IDataLocalizationInjection).GetMethod("ConfigureProperty");
+		protected static readonly MethodInfo GenericConfigureProperty =
+			typeof(IDataLocalizationInjection).GetMethod("ConfigureProperty");
+
+		protected static readonly MethodInfo GenericIgnore =
+			typeof(IDataLocalizationInjection).GetMethod("IgnoreProperty");
 
 		protected static readonly PropertyInfo DefaultValueProperty =
-			typeof(LocalizedStrings).GetProperty("Value", BindingFlags.Instance | BindingFlags.Public);
+			typeof(TLocalizedStrings).GetProperty("Value", BindingFlags.Instance | BindingFlags.Public);
 
 		protected static readonly PropertyInfo DefaultComputedValueProperty =
 			typeof(TComputedLocalizedStrings).GetProperty("Value", BindingFlags.Instance | BindingFlags.Public);
@@ -40,7 +47,8 @@ namespace EntityFramework.Inject.Emit
 
 		protected static readonly PropertyInfo[] IndexedComputedValueProperties =
 			typeof(TComputedLocalizedStrings).GetProperties(BindingFlags.Instance | BindingFlags.Public);
-// ReSharper restore StaticFieldInGenericType
+
+		// ReSharper restore StaticFieldInGenericType
 
 		/// <summary>
 		/// Builds method OnModelCreating (see example).
@@ -68,9 +76,7 @@ namespace EntityFramework.Inject.Emit
 				                           typeof(TComputedLocalizedStrings).IsAssignableFrom(x.PropertyType))
 			                           .ToArray();
 
-			var funcType = typeof(Func<,>).MakeGenericType(entityType, typeof(string));
-			
-			var lambda = GenericLambda.MakeGenericMethod(funcType);
+			var lambda = GenericLambda.MakeGenericMethod(typeof(Func<,>).MakeGenericType(entityType, typeof(string)));
 
 			var configure = GenericConfigureProperty.MakeGenericMethod(entityType);
 
@@ -85,30 +91,52 @@ namespace EntityFramework.Inject.Emit
 			}
 		}
 
-		private static void ConfigureProperties(Type entityType, ILGenerator il, PropertyInfo complexProperty, MethodInfo lambda,
-			MethodInfo configure, IEnumerable<PropertyInfo> indexedProperties, PropertyInfo defaultProperty)
+		protected override void ConfigureDbSets(TypeBuilder typeBuilder, ILGenerator il)
 		{
-			// TODO: LocaleIndex checking
+			base.ConfigureDbSets(typeBuilder, il);
 
-			ConfigureProperty(il, entityType, complexProperty, defaultProperty, lambda, configure);
+			IgnoreProperties(il, typeof(TLocalizedStrings), DefaultValueProperty, IndexedValueProperties);
+			IgnoreProperties(il, typeof(TComputedLocalizedStrings), DefaultComputedValueProperty, IndexedComputedValueProperties);
+		}
 
-			foreach (var valueProperty in indexedProperties)
+		private static void IgnoreProperties(ILGenerator il, Type complexType, PropertyInfo valueProperty, PropertyInfo[] indexedProperties)
+		{
+			var ignore = GenericIgnore.MakeGenericMethod(complexType);
+			var lambda = GenericLambda.MakeGenericMethod(typeof(Func<,>).MakeGenericType(complexType, typeof(string)));
+
+			ConfigureProperty(il, complexType, lambda, ignore, valueProperty);
+
+			foreach (var property in indexedProperties)
 			{
-				ConfigureProperty(il, entityType, complexProperty, valueProperty, lambda, configure);
+				ConfigureProperty(il, complexType, lambda, ignore, property);
 			}
 		}
 
-		private static void ConfigureProperty(ILGenerator il, Type entityType, PropertyInfo complexProperty, 
-			PropertyInfo valueProperty, MethodInfo lambda, MethodInfo configure)
+		private static void ConfigureProperties(Type entityType, ILGenerator il, PropertyInfo complexProperty, 
+			MethodInfo lambda,  MethodInfo configure, IEnumerable<PropertyInfo> indexedProperties, PropertyInfo defaultProperty)
+		{
+			// TODO: consider to generate LocaleIndex checking to reduce lines to execute
+
+			ConfigureProperty(il, entityType, lambda, configure, defaultProperty, complexProperty);
+
+			foreach (var valueProperty in indexedProperties)
+			{
+				ConfigureProperty(il, entityType, lambda, configure, valueProperty, complexProperty);
+			}
+		}
+
+		private static void ConfigureProperty(ILGenerator il, Type type, MethodInfo lambda, MethodInfo configure, 
+			PropertyInfo valueProperty, PropertyInfo complexProperty = null)
 		{
 			// injections[i].ConfigureProperty<Category>(modelBuilder, x => x.CategoryName.Value1);
-			
+			// injections[i].IgnoreProperty<LocalizedStrings>(modelBuilder, x => x.Value1);
+
 			il.Emit(OpCodes.Ldloc_0);
 			il.Emit(OpCodes.Ldloc_1);
 			il.Emit(OpCodes.Ldelem_Ref);
 			il.Emit(OpCodes.Ldarg_1);
 
-			il.Emit(OpCodes.Ldtoken, entityType);
+			il.Emit(OpCodes.Ldtoken, type);
 			il.EmitCall(OpCodes.Call, GetTypeFromHandle, null);
 
 			il.Emit(OpCodes.Ldstr, "x");
@@ -117,7 +145,8 @@ namespace EntityFramework.Inject.Emit
 			il.Emit(OpCodes.Stloc_S, 4);
 			il.Emit(OpCodes.Ldloc_S, 4);
 
-			EmitPropertyForLambda(il, complexProperty);
+			if (complexProperty != null)
+				EmitPropertyForLambda(il, complexProperty);
 			EmitPropertyForLambda(il, valueProperty);
 
 			il.Emit(OpCodes.Ldc_I4_1);

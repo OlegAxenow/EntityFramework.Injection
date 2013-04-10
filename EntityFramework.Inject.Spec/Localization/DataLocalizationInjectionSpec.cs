@@ -21,7 +21,7 @@ namespace EntityFramework.Inject.Spec.Localization
 		{
 			_factory = new DbContextFactory(/*saveAssembliesToDisk: true*/);
 			MethodBuilderRegistry.Register<IDataLocalizationInjection>(
-				new LocalizationModelCreationBuilder<LocalizedStrings, ComputedLocalizedStrings>());
+				new LocalizationModelCreationBuilder<LocalizedStrings3, ComputedLocalizedStrings3>());
 			MethodBuilderRegistry.Register<ISaveChangesInjection>(new SaveChangesBuilder());
 		}
 
@@ -87,7 +87,7 @@ namespace EntityFramework.Inject.Spec.Localization
 					// act
 					var newCategory = new Category
 					{
-						CategoryName = new LocalizedStrings { Value1 = "c1", Value2 = "c2", Value3 = "c3" }
+						CategoryName = new LocalizedStrings3 { Value1 = "c1", Value2 = "c2", Value3 = "c3" }
 					};
 					context.Categories.Add(newCategory);
 
@@ -110,7 +110,7 @@ namespace EntityFramework.Inject.Spec.Localization
 					// act
 					var newCategory = new ProtectedCategory
 					{
-						CategoryName = new LocalizedStrings { Value1 = "c1", Value2 = "c2", Value3 = "c3" }
+						CategoryName = new LocalizedStrings3 { Value1 = "c1", Value2 = "c2", Value3 = "c3" }
 					};
 					context.Categories.Add(newCategory);
 

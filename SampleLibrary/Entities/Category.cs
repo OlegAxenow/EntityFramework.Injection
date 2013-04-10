@@ -6,9 +6,9 @@ namespace SampleLibrary.Entities
 	{
 		public int Id { get; set; }
 
-		public LocalizedStrings CategoryName { get; set; }
+		public LocalizedStrings3 CategoryName { get; set; }
 
-		public ComputedLocalizedStrings CategoryComputed { get; set; }
+		public ComputedLocalizedStrings3 CategoryComputed { get; set; }
 
 		public string NotLocalizedName { get; set; }
 	}

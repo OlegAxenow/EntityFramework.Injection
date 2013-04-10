@@ -22,7 +22,11 @@ namespace EntityFramework.Inject.Localization
 			AcceptedComplexTypes = new Dictionary<Type, Func<object>>
 			{
 				{ typeof(LocalizedStrings), () => new LocalizedStrings() },
-				{ typeof(ComputedLocalizedStrings), () => new ComputedLocalizedStrings() }
+				{ typeof(ComputedLocalizedStrings), () => new ComputedLocalizedStrings() },
+				{ typeof(LocalizedStrings3), () => new LocalizedStrings3() },
+				{ typeof(ComputedLocalizedStrings3), () => new ComputedLocalizedStrings3() },
+				{ typeof(LocalizedStrings5), () => new LocalizedStrings5() },
+				{ typeof(ComputedLocalizedStrings5), () => new ComputedLocalizedStrings5() }
 			};
 		}
 
