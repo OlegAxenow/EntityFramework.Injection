@@ -154,7 +154,6 @@ namespace EntityFramework.Inject.Spec.Localization
 
 		[TestCase(-1)]
 		[TestCase(-1000)]
-		[TestCase(50)]
 		public void Inproper_locale_index_should_produce_exception(int index)
 		{
 			Assert.Throws<ArgumentOutOfRangeException>(() => Create<BasicDbContext>(index));
