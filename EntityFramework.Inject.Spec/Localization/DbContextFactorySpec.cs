@@ -20,7 +20,8 @@ namespace EntityFramework.Inject.Spec.Localization
 		public void TestFixtureSetUp()
 		{
 			_factory = new DbContextFactory();
-			MethodBuilderRegistry.Register<IModelCreationInjection>(new ModelCreationBuilder());
+			MethodBuilderRegistry.Register<IDataLocalizationInjection>(
+				new LocalizationModelCreationBuilder<LocalizedStrings3, ComputedLocalizedStrings3>());
 		}
 
 		private T Create<T>(int localeIndex = 0) where T : DbContext
