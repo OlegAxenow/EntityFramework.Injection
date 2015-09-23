@@ -52,10 +52,11 @@ At this moment dependency injection supported for the three DbContext's methods.
 ### OnModelCreating
 
 You can inject dependency into this method with the help of `IModelCreationInjection.OnModelCreating`. This method will be called after calling base method.
-This is the **main advantage** of this library, because it allow *to setup model differently for **one** DbContext depending on conditions.* As far as I know, [Dynamic Proxy](http://www.castleproject.org/projects/dynamicproxy/) does not fit this need, because of new class creation for each DbContext creation.
+This is the **main advantage** of this library, because it allow *to setup model differently for ONE DbContext depending on conditions.* As far as I know, [Dynamic Proxy](http://www.castleproject.org/projects/dynamicproxy/) does not fit this need, because of new class creation for each DbContext creation.
 
 Let me explain the details. Normally, you can setup model, e.g. `ComplexType` only once for `DbContext`. But for some complex tasks, like localization of data, you can want to setup some `ComplexTypes` depending on some parameters like `Thread.CurrentUICulture`.
 
+**Registering builder with `MethodBuilderRegistry` is mandatory step.**
 In `DataLocalizationInjectionSpec` you can see how to register method builder for two complex type's localization:
 
 	MethodBuilderRegistry.Register<IDataLocalizationInjection>(
