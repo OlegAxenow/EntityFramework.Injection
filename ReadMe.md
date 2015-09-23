@@ -2,6 +2,8 @@
 
 The goal of this project is to provide a way to inject a dependency into Entity Framework's DbContext.
 
+**Disclaimer: Unfortunately, I can't check tests in my current environment (VS2015) and I'm not sure about using with new .NET versions.** BTW, I'm not using EntityFramework in my current projects.
+
 ## What does that mean?
 
 For example, you can even conditionally setup ComplexType to allow localization of data on the fly. This is the most powerful feature of this library, because *you cannot do it without dynamic code generation*. It will be explained in the "OnModelCreating" section below.
