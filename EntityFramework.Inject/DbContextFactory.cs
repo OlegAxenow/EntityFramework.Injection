@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.Linq;
 using System.Reflection.Emit;
 using EntityFramework.Inject.Emit;
 using Method.Inject;
@@ -28,7 +29,7 @@ namespace EntityFramework.Inject
 		public T Create<T>(InjectionSet injectionSet, string nameOrConnectionString = null) 
 		{
 			var type = typeof(T);
-			var contextType = CreateTypes(injectionSet, type)[0];
+			var contextType = CreateTypes(injectionSet, null, type)[0];
 
 			Debug.Assert(type.BaseType != null, "type.BaseType != null");
 			nameOrConnectionString = nameOrConnectionString ?? _defaultNameOrConnectionString ?? type.BaseType.Name;
@@ -43,10 +44,31 @@ namespace EntityFramework.Inject
 			return (T)constructor.Invoke(parameters);
 		}
 
-		/// <summary>
-		/// Creates <see cref="Type"/> for injected instance of context with specified injections.</summary>
-		/// <remarks> Can be used to create multiple types to avoid overhead of creation too many dynamic assemblies.</remarks>
-		public Type[] CreateTypes(InjectionSet injectionSet, params Type[] baseContextTypes)
+        /// <summary>
+        /// Creates new injected instance of context with specified injections.</summary>
+        public T Create<T>( InjectionSet injectionSet, object[] constructorParameters )
+        {
+            var type = typeof( T );
+            var constructorParameterTypes = constructorParameters.Select( o => o.GetType() ).ToArray();
+            var contextType = CreateTypes( injectionSet, constructorParameterTypes, type )[ 0 ];
+
+            Debug.Assert( type.BaseType != null, "type.BaseType != null" );            
+
+            var constructor = contextType.GetConstructor( new []{typeof(InjectionSet)}.Concat( constructorParameterTypes ).ToArray() );
+            if ( constructor == null )
+                throw new InvalidOperationException(
+                    string.Format( "DbContext constructor with injection set and the specified constructor parameters not supported by {0}.",
+                    contextType ) );
+
+            var parameters = new[] { injectionSet }.Concat(constructorParameters).ToArray();
+
+            return (T) constructor.Invoke( parameters.ToArray() );
+        }
+
+        /// <summary>
+        /// Creates <see cref="Type"/> for injected instance of context with specified injections.</summary>
+        /// <remarks> Can be used to create multiple types to avoid overhead of creation too many dynamic assemblies.</remarks>
+        public Type[] CreateTypes(InjectionSet injectionSet, Type[] constructorParameterTypes = null, params Type[] baseContextTypes)
 		{
 			if (injectionSet == null) throw new ArgumentNullException("injectionSet");
 			if (baseContextTypes == null) throw new ArgumentNullException("baseContextTypes");
@@ -54,7 +76,7 @@ namespace EntityFramework.Inject
 
 			var result = new Type[baseContextTypes.Length];
 			InjectedAssemblyBuilder builder = null;
-			Func<TypeBuilder, InjectedTypeBuilder> factory = tb => new InjectedDbContextBuilder(tb);
+			Func<TypeBuilder, InjectedTypeBuilder> factory = tb => new InjectedDbContextBuilder(tb, constructorParameterTypes);
 			
 			lock (_syncObject)
 			{
